@@ -60,7 +60,10 @@ namespace api.Repositories
             var foodToUpdate = await _context?.Foods.FirstOrDefaultAsync(x => x.Id == id)!;
             if (foodToUpdate == null) return null;
 
-            _context.Entry(foodToUpdate).CurrentValues.SetValues(food);
+            foodToUpdate.Category = food.Category;
+            foodToUpdate.Name = food.Name;
+            foodToUpdate.Price = food.Price;
+            
             await _context.SaveChangesAsync();
             return foodToUpdate;
         }

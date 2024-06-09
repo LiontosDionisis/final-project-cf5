@@ -37,7 +37,7 @@ namespace api.Services
             var cat = await _catRepo!.GetByIdAsync(id);
             if (cat == null) return null;
 
-            _catRepo?.DeleteAsync(cat.Id);
+            await _catRepo!.DeleteAsync(cat.Id);
             var deletedCat = _mapper!.Map<CategoryReadOnlyDTO>(cat);
             return deletedCat;
         }
@@ -69,7 +69,7 @@ namespace api.Services
 
         public async Task<CategoryReadOnlyDTO?> UpdateCategoryAsync(CategoryUpdateDTO dto, int id)
         {
-            var cat = await _catRepo!.GetByNameAsync(dto.Name!);
+            var cat = await _catRepo!.GetByIdAsync(id);
             if (cat == null) return null!;
 
             cat.Name = dto.Name!;

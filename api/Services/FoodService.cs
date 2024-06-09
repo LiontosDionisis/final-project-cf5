@@ -69,7 +69,7 @@ namespace api.Services
 
         public async Task<FoodReadOnlyDTO> UpdateFoodAsync(FoodUpdateDTO dto, int id)
         {
-            var food = await _foodRepo!.GetByNameAsync(dto.Name!);
+            var food = await _foodRepo!.GetByIdAsync(id);
             if (food == null) return null!;
 
             food.Name = dto.Name!;

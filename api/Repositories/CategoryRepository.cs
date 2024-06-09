@@ -57,7 +57,8 @@ namespace api.Repositories
             var existingCategory = await _context!.Categories.FindAsync(id);
             if (existingCategory == null) return null;
             
-            _context.Entry(existingCategory).CurrentValues.SetValues(category);
+            existingCategory.Name = category.Name;
+            
             await _context.SaveChangesAsync();
             return existingCategory;
         }
