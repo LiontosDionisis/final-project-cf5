@@ -11,6 +11,7 @@ namespace api.Repositories
     {
         Task<Food?> GetFoodByIdAsync(int id);
         Task<List<Food>> GetAllAsync();
+        Task<Food> GetByNameAsync(string name);
         Task<Food> AddFoodAsync(Food food);
         Task<Food?> DeleteFoodAsync(int id);
         Task<Food?> UpdateFoodAsync(Food food, int id);

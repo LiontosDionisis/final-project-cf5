@@ -40,6 +40,14 @@ namespace api.Repositories
             return await _context?.Foods.ToListAsync()!;
         }
 
+        public async Task<Food> GetByNameAsync(string name)
+        {
+            var food = await _context!.Foods.FirstOrDefaultAsync(x => x.Name == name)!;
+            if (food == null) return null!;
+
+            return food;
+        }
+
         public async Task<Food?> GetFoodByIdAsync(int id)
         {
             var food = await _context?.Foods.FirstOrDefaultAsync(x => x.Id == id)!;
