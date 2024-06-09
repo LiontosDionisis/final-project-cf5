@@ -48,7 +48,7 @@ namespace api.Repositories
             return food;
         }
 
-        public async Task<Food?> GetFoodByIdAsync(int id)
+        public async Task<Food?> GetByIdAsync(int id)
         {
             var food = await _context?.Foods.FirstOrDefaultAsync(x => x.Id == id)!;
             if (food == null) return null;

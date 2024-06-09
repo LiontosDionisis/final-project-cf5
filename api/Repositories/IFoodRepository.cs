@@ -9,7 +9,7 @@ namespace api.Repositories
 {
     public interface IFoodRepository
     {
-        Task<Food?> GetFoodByIdAsync(int id);
+        Task<Food?> GetByIdAsync(int id);
         Task<List<Food>> GetAllAsync();
         Task<Food> GetByNameAsync(string name);
         Task<Food> AddFoodAsync(Food food);
