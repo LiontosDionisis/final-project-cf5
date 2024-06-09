@@ -45,6 +45,13 @@ namespace api.Repositories
             return category;
         }
 
+        public async Task<Category?> GetByNameAsync(string name)
+        {
+            var category = await _context?.Categories.FirstOrDefaultAsync(x => x.Name == name)!;
+            if (category == null) return null;
+            return category;
+        }
+
         public async Task<Category?> UpdateAsync(Category category, int id)
         {
             var existingCategory = await _context!.Categories.FindAsync(id);
