@@ -21,15 +21,32 @@ namespace api.Services
         }
         public async Task<CategoryReadOnlyDTO> CreateCategoryAsync(CategoryInsertDTO dto)
         {
-            var cat = ExtractCategory(dto);
-            Category? existingCategory = await _catRepo!.GetByNameAsync(cat.Name);
+            var existingCategory = await _catRepo?.GetByNameAsync(dto.Name!)!;
             if (existingCategory != null)
             {
-                throw new CategoryAlreadyExistsException("Category exists " + existingCategory.Name);
+                throw new ArgumentException("Category already exists");
             }
+            
+            var categoryEntity = new Category {Name = dto.Name!};
 
-            await _catRepo!.AddCategoryAsync(cat);
-            return _mapper!.Map<CategoryReadOnlyDTO>(cat);
+            _catRepo?.AddCategoryAsync(categoryEntity);
+
+            var catDto = new CategoryReadOnlyDTO
+            {
+                Id = categoryEntity.Id,
+                Name = categoryEntity.Name
+            };
+
+            return catDto;
+            // var cat = ExtractCategory(dto);
+            // Category? existingCategory = await _catRepo!.GetByNameAsync(cat.Name);
+            // if (existingCategory != null)
+            // {
+            //     throw new CategoryAlreadyExistsException("Category exists " + existingCategory.Name);
+            // }
+
+            // await _catRepo!.AddCategoryAsync(cat);
+            // return _mapper!.Map<CategoryReadOnlyDTO>(cat);
         }
 
         public async Task<CategoryReadOnlyDTO?> DeleteCategoryAsync(int id)

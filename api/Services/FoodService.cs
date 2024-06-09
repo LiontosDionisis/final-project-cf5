@@ -2,11 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml;
+using api.Data;
 using api.DTOs;
 using api.Models;
 using api.Repositories;
 using api.Services.Exceptions;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 
 namespace api.Services
@@ -15,12 +18,14 @@ namespace api.Services
     {
         private readonly IFoodRepository? _foodRepo;
         private readonly IMapper? _mapper;
+        private readonly AppDbContext _context;
         private readonly ICategoryService _catService;
-        public FoodService(IFoodRepository foodRepo, IMapper mapper, ICategoryService catService)
+        public FoodService(IFoodRepository foodRepo, IMapper mapper, ICategoryService catService, AppDbContext context)
         {
             _foodRepo = foodRepo;
             _mapper = mapper;
             _catService = catService;
+            _context = context;
         }
 
         public async Task<FoodReadOnlyDTO> AddFoodAsync(FoodInsertDTO dto)
@@ -28,25 +33,65 @@ namespace api.Services
             var existingFood = await _foodRepo!.GetByNameAsync(dto.Name);
             if (existingFood != null)
             {
-                throw new FoodAlreadyExistsException("Food exists " + existingFood.Name);
+                throw new FoodAlreadyExistsException("Food already exists with name " + dto.Name);
             }
 
-            var food = new Food 
+            var existingCategory = await _catService!.GetCategoryByNameAsync(dto.Category!);
+            if (existingCategory == null)
+            {
+                throw new ArgumentException("Category not found");
+            }
+
+            var existingCategoryEntity = await _context.Categories.FirstOrDefaultAsync(c => c.Name == existingCategory.Name);
+            if (existingCategoryEntity == null)
+            {
+                return null!;
+            }
+
+            var foodEntity = new Food
             {
                 Name = dto.Name,
                 Price = dto.Price,
+                Category = existingCategoryEntity
+            };
+
+            await _foodRepo!.AddFoodAsync(foodEntity);
+
+            var foodDto = new FoodReadOnlyDTO
+            {
+                Id = foodEntity.Id,
+                Name = foodEntity.Name,
+                Price = foodEntity.Price,
                 Category = _mapper!.Map<Category>(dto.Category)
             };
 
-            var existingCat = await _catService!.GetCategoryByNameAsync(dto.Category!);
-            if (existingCat != null)
-            {
-                food.Category = _mapper!.Map<Category>(existingCat);
-            }
-
-            await _foodRepo!.AddFoodAsync(food);
-            return _mapper!.Map<FoodReadOnlyDTO>(food);
+            return foodDto;
         }
+
+        // public async Task<FoodReadOnlyDTO> AddFoodAsync(FoodInsertDTO dto)
+        // {
+        //     var existingFood = await _foodRepo!.GetByNameAsync(dto.Name);
+        //     if (existingFood != null)
+        //     {
+        //         throw new FoodAlreadyExistsException("Food exists " + existingFood.Name);
+        //     }
+
+        //     // var existingCategory = await _catService.GetCategoryByNameAsync(dto.Category!);
+        //     // if (existingCategory == null)
+        //     // {
+        //     //     throw new ArgumentException("Category not found");
+        //     // }
+
+        //     var food = new Food 
+        //     {
+        //         Name = dto.Name,
+        //         Price = dto.Price,
+        //         Category = _mapper!.Map<Category>(category)
+        //     };
+
+        //     await _foodRepo!.AddFoodAsync(food);
+        //     return _mapper!.Map<FoodReadOnlyDTO>(food);
+        // }
 
 
         public async Task<FoodReadOnlyDTO?> DeleteFoodAsync(int id)

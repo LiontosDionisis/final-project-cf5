@@ -9,5 +9,6 @@ namespace api.Models
     {
         public int Id { get; set; }
         public String Name { get; set; } = String.Empty;
+        public ICollection<Food>? Foods { get; set; }
     }
 }
