@@ -135,3 +135,8 @@ C:\Users\agame\OneDrive\Desktop\FoodDelivery\api\obj\Debug\net8.0\refint\api.dll
 C:\Users\agame\OneDrive\Desktop\FoodDelivery\api\obj\Debug\net8.0\api.pdb
 C:\Users\agame\OneDrive\Desktop\FoodDelivery\api\obj\Debug\net8.0\api.genruntimeconfig.cache
 C:\Users\agame\OneDrive\Desktop\FoodDelivery\api\obj\Debug\net8.0\ref\api.dll
+C:\Users\agame\OneDrive\Desktop\FoodDelivery\api\bin\Debug\net8.0\AutoMapper.dll
+C:\Users\agame\OneDrive\Desktop\FoodDelivery\api\bin\Debug\net8.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
+C:\Users\agame\OneDrive\Desktop\FoodDelivery\api\bin\Debug\net8.0\BCrypt.Net-Next.dll
+C:\Users\agame\OneDrive\Desktop\FoodDelivery\api\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\agame\OneDrive\Desktop\FoodDelivery\api\obj\Debug\net8.0\api.sourcelink.json
