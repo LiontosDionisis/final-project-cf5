@@ -12,6 +12,6 @@ namespace api.DTOs
         public String Name { get; set; } = String.Empty;
         [Column(TypeName = "decimal(18,2)")]
         public decimal Price { get; set; }
-        public Category? Category {get; set;}
+        public String? Category {get; set;}
     }
 }

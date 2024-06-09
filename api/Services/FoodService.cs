@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Xml;
 using api.Data;
@@ -131,16 +132,54 @@ namespace api.Services
 
         public async Task<FoodReadOnlyDTO> UpdateFoodAsync(FoodUpdateDTO dto, int id)
         {
-            var food = await _foodRepo!.GetByIdAsync(id);
-            if (food == null) return null!;
+            try
+            {
+                var food = await _foodRepo!.GetByIdAsync(id);
+                if (food == null) return null!;
 
-            food.Name = dto.Name!;
-            food.Price = dto.Price!;
-            food.Category = dto.Category!;
+                if (dto.Name != null) food.Name = dto.Name;
+                if (dto?.Price != null) food.Price = dto.Price;
+                if (dto?.Category != null)
+                {
+                    var existingCategory = await _catService.GetCategoryByNameAsync(dto.Category);
+                    if (existingCategory != null)
+                    {
+                        food.Category = _mapper!.Map<Category>(existingCategory);
+                    }
+                    else {
+                        var newCategory = new Category {Name = dto.Name!};
+                        food.Category = newCategory;
+                    }
+                }    
+                await _foodRepo.UpdateFoodAsync(food, food.Id);
+                _context.Entry(food).Reload();
+                var updatedFood = _mapper!.Map<FoodReadOnlyDTO>(food);
+                return updatedFood; 
+            }
+            catch (Exception)
+            {
+                return null!;
+            }
+            
 
-            await _foodRepo.UpdateFoodAsync(food, food.Id);
-            var updatedFood = _mapper!.Map<FoodReadOnlyDTO>(food);
-            return updatedFood;
+            // food.Name = dto.Name!;
+            // food.Price = dto.Price!;
+            // food.Category = _mapper!.Map<Category>(dto.Category);
+
+            // try
+            // {
+            //     await _foodRepo.UpdateFoodAsync(food, food.Id);
+            //     var updatedFood = _mapper.Map<FoodReadOnlyDTO>(food);
+            //     return updatedFood;
+            // }
+            // catch (Exception e)
+            // {
+            //     throw new Exception("Error updating food " + e.Message);
+            // }
+
+            // await _foodRepo.UpdateFoodAsync(food, food.Id);
+            // var updatedFood = _mapper!.Map<FoodReadOnlyDTO>(food);
+            // return updatedFood;
         }
 
     }

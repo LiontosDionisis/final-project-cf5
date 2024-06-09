@@ -20,7 +20,7 @@ namespace api.Mapper
             CreateMap<Category, CategoryReadOnlyDTO>().ReverseMap();
             CreateMap<string, Category>()
             .ConvertUsing(source => new Category { Name = source });
-            
+            CreateMap<FoodReadOnlyDTO, FoodUpdateDTO>().ReverseMap();
             CreateMap<Food, FoodReadOnlyDTO>().ReverseMap();
             CreateMap<Food, FoodInsertDTO>().ReverseMap();
             CreateMap<Food, FoodUpdateDTO>().ReverseMap();
