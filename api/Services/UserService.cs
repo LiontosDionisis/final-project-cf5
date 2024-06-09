@@ -32,7 +32,7 @@ namespace api.Services
             var user = await _userRepo!.GetUserByIdAsync(id);
             if (user == null) return null!;
 
-            _userRepo?.DeleteUserAsync(user.Id);
+            await _userRepo!.DeleteUserAsync(user.Id);
 
             var userDeleted = _mapper!.Map<UserReadOnlyDTO>(user);
             return userDeleted;

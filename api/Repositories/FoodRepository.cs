@@ -19,6 +19,7 @@ namespace api.Repositories
         }
         public async Task<Food> AddFoodAsync(Food food)
         {
+            
             var foodToAdd = await _context!.Foods.AddAsync(food);
             await _context.SaveChangesAsync();
 
@@ -37,12 +38,12 @@ namespace api.Repositories
 
         public async Task<List<Food>> GetAllAsync()
         {
-            return await _context?.Foods.ToListAsync()!;
+            return await _context?.Foods.Include(f => f.Category).ToListAsync()!;
         }
 
         public async Task<Food> GetByNameAsync(string name)
         {
-            var food = await _context!.Foods.FirstOrDefaultAsync(x => x.Name == name)!;
+            var food = await _context!.Foods.Include(f => f.Category).FirstOrDefaultAsync(x => x.Name == name)!;
             if (food == null) return null!;
 
             return food;
@@ -50,7 +51,7 @@ namespace api.Repositories
 
         public async Task<Food?> GetByIdAsync(int id)
         {
-            var food = await _context?.Foods.FirstOrDefaultAsync(x => x.Id == id)!;
+            var food = await _context?.Foods.Include(f => f.Category).FirstOrDefaultAsync(x => x.Id == id)!;
             if (food == null) return null;
             return food;
         }

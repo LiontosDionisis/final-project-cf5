@@ -21,6 +21,7 @@ namespace api.Repositories
         {
             var categoryToAdd = await _context!.Categories.AddAsync(category);
             await _context.SaveChangesAsync();
+        
             return categoryToAdd.Entity;
         }
 
@@ -40,14 +41,16 @@ namespace api.Repositories
 
         public async Task<Category?> GetByIdAsync(int id)
         {
-            var category = await _context?.Categories.FirstOrDefaultAsync(x => x.Id == id)!;
+           var category = await _context!.Categories.FirstOrDefaultAsync(c => c.Id == id);
+
             if (category == null) return null;
-            return category;
+            return category!;
         }
 
         public async Task<Category?> GetByNameAsync(string name)
         {
-            var category = await _context?.Categories.FirstOrDefaultAsync(x => x.Name == name)!;
+            var category = await _context?.Categories.AsNoTracking().FirstOrDefaultAsync(c => c.Name == name)!;
+
             if (category == null) return null;
             return category;
         }

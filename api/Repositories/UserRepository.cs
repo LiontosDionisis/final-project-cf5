@@ -59,6 +59,9 @@ namespace api.Repositories
 
             if (existingUser == null) return null;
 
+            
+            //TODO: Change update function
+
             _context.Entry(existingUser).CurrentValues.SetValues(user);
 
             await _context.SaveChangesAsync();

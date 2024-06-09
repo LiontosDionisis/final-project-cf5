@@ -7,6 +7,7 @@ using api.Models;
 using api.Repositories;
 using api.Services.Exceptions;
 using AutoMapper;
+using Microsoft.Identity.Client;
 
 namespace api.Services
 {
@@ -14,30 +15,46 @@ namespace api.Services
     {
         private readonly IFoodRepository? _foodRepo;
         private readonly IMapper? _mapper;
-        public FoodService(IFoodRepository foodRepo, IMapper mapper)
+        private readonly ICategoryService _catService;
+        public FoodService(IFoodRepository foodRepo, IMapper mapper, ICategoryService catService)
         {
             _foodRepo = foodRepo;
             _mapper = mapper;
+            _catService = catService;
         }
+
         public async Task<FoodReadOnlyDTO> AddFoodAsync(FoodInsertDTO dto)
         {
-            var food = ExctractFood(dto);
-            Food? existingFood = await _foodRepo!.GetByNameAsync(food.Name);
+            var existingFood = await _foodRepo!.GetByNameAsync(dto.Name);
             if (existingFood != null)
             {
                 throw new FoodAlreadyExistsException("Food exists " + existingFood.Name);
+            }
+
+            var food = new Food 
+            {
+                Name = dto.Name,
+                Price = dto.Price,
+                Category = _mapper!.Map<Category>(dto.Category)
+            };
+
+            var existingCat = await _catService!.GetCategoryByNameAsync(dto.Category!);
+            if (existingCat != null)
+            {
+                food.Category = _mapper!.Map<Category>(existingCat);
             }
 
             await _foodRepo!.AddFoodAsync(food);
             return _mapper!.Map<FoodReadOnlyDTO>(food);
         }
 
+
         public async Task<FoodReadOnlyDTO?> DeleteFoodAsync(int id)
         {
             var food = await _foodRepo!.GetByIdAsync(id);
             if (food == null) return null!;
 
-            _foodRepo?.DeleteFoodAsync(food.Id);
+            await _foodRepo!.DeleteFoodAsync(food.Id);
             var deletedFood = _mapper!.Map<FoodReadOnlyDTO>(food);
             return deletedFood;
         }
@@ -81,14 +98,5 @@ namespace api.Services
             return updatedFood;
         }
 
-        private Food ExctractFood(FoodInsertDTO dto)
-        {
-            return new Food()
-            {
-                Name = dto.Name!,
-                Price = dto.Price!,
-                Category = dto.Category
-            };
-        }
     }
 }

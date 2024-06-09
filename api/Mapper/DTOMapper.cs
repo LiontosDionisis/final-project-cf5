@@ -18,7 +18,9 @@ namespace api.Mapper
             CreateMap<Category, CategoryInsertDTO>().ReverseMap();
             CreateMap<Category, CategoryUpdateDTO>().ReverseMap();
             CreateMap<Category, CategoryReadOnlyDTO>().ReverseMap();
-            CreateMap<CategoryReadOnlyDTO, CategoryUpdateDTO>().ReverseMap();
+            CreateMap<string, Category>()
+            .ConvertUsing(source => new Category { Name = source });
+            
             CreateMap<Food, FoodReadOnlyDTO>().ReverseMap();
             CreateMap<Food, FoodInsertDTO>().ReverseMap();
             CreateMap<Food, FoodUpdateDTO>().ReverseMap();
