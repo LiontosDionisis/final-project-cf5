@@ -47,6 +47,15 @@ namespace api.Services
             return usersToReturn;
         }
 
+        public async Task<UserReadOnlyDTO> GetUserByEmailAsync(string email)
+        {
+            var user = await _userRepo!.GetByEmailAsync(email);
+            if (user == null) return null!;
+
+            var userToReturn = _mapper!.Map<UserReadOnlyDTO>(user);
+            return userToReturn;
+        }
+
         public async Task<UserReadOnlyDTO> GetUserByIdAsync(int id)
         {
             var user = await _userRepo!.GetUserByIdAsync(id);
@@ -54,6 +63,14 @@ namespace api.Services
 
             var userToReturn = _mapper!.Map<UserReadOnlyDTO>(user);
             return userToReturn; 
+        }
+
+        public async Task<UserReadOnlyDTO> GetUserByUsernameAsync(string username)
+        {
+            var user = await _userRepo!.GetByUsernameAsync(username);
+            if (user == null) return null!;
+            var userToReturn = _mapper!.Map<UserReadOnlyDTO>(user);
+            return userToReturn;
         }
 
         public async Task<JwtResponse?> LoginUserAsync(LoginDto dto)
@@ -101,15 +118,14 @@ namespace api.Services
 }
 
 
-        public async Task<UserReadOnlyDTO> UpdateUserAsync(UserUpdateDTO dto)
+        public async Task<UserReadOnlyDTO> UpdateUserAsync(UserUpdateDTO dto, int id)
         {
-            var user = await _userRepo!.GetByUsernameAsync(dto.Username!);
-
+            var user = await _userRepo!.GetUserByIdAsync(id);
             if (user == null) return null!;
 
-            user.Email = dto.Email!;
-            user.Username = dto.Username!;
-            user.Password = EncryptionUtil.Encrypt(dto.Password!);
+            if(user.Email != null) user.Email = dto.Email!;
+            if(user.Username != null) user.Username = dto.Username!;
+            if(user.Password != null) user.Password = EncryptionUtil.Encrypt(dto.Password!);
 
             await _userRepo.UpdateUserAsync(user, user.Id);
 
@@ -117,7 +133,12 @@ namespace api.Services
 
             return updatedUser;
         }
-        
+
+        public async Task<bool> UserExistsAsync(string username, string email)
+        {
+            return await _userRepo!.UserExistsAsync(username, email);
+        }
+
         private User ExtractUser(UserInsertDTO signupDTO)
         {
             return new User()

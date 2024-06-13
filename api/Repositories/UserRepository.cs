@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
 using api.Models;
+using api.Security;
 using Microsoft.EntityFrameworkCore;
 
 namespace api.Repositories
@@ -39,6 +40,13 @@ namespace api.Repositories
             return await _context?.Users.ToListAsync()!;
         }
 
+        public async Task<User?> GetByEmailAsync(string email)
+        {
+            var user = await _context?.Users.FirstOrDefaultAsync(x => x.Email == email)!;
+            if (user == null) return null;
+            return user;
+        }
+
         public async Task<User?> GetByUsernameAsync(string username)
         {
             var user = await _context?.Users.FirstOrDefaultAsync(x => x.Username == username)!;
@@ -56,16 +64,20 @@ namespace api.Repositories
         public async Task<User?> UpdateUserAsync(User user, int id)
         {
             var existingUser = await _context!.Users.FindAsync(id);
-
             if (existingUser == null) return null;
 
-            
-            //TODO: Change update function
-
-            _context.Entry(existingUser).CurrentValues.SetValues(user);
+            existingUser.Email = user.Email;
+            existingUser.Username = user.Username;
+            existingUser.Password = EncryptionUtil.Encrypt(user.Password);
 
             await _context.SaveChangesAsync();
             return existingUser;
+        }
+
+        public async Task<bool> UserExistsAsync(string username, string email)
+        {
+            var user = await _context?.Users.FirstOrDefaultAsync(u => u.Username == username || u.Email == email)!;
+            return user != null;
         }
     }
 }

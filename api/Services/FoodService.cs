@@ -139,18 +139,10 @@ namespace api.Services
 
                 if (dto.Name != null) food.Name = dto.Name;
                 if (dto?.Price != null) food.Price = dto.Price;
-                if (dto?.Category != null)
-                {
-                    var existingCategory = await _catService.GetCategoryByNameAsync(dto.Category);
-                    if (existingCategory != null)
-                    {
-                        food.Category = _mapper!.Map<Category>(existingCategory);
-                    }
-                    else {
-                        var newCategory = new Category {Name = dto.Name!};
-                        food.Category = newCategory;
-                    }
-                }    
+                var catName = await _catService.GetCategoryByNameAsync(dto!.Category!.Name);
+                var catId = catName!.Id;
+                if (dto?.Category != null) food.Category = dto.Category;
+                    
                 await _foodRepo.UpdateFoodAsync(food, food.Id);
                 _context.Entry(food).Reload();
                 var updatedFood = _mapper!.Map<FoodReadOnlyDTO>(food);
@@ -160,26 +152,6 @@ namespace api.Services
             {
                 return null!;
             }
-            
-
-            // food.Name = dto.Name!;
-            // food.Price = dto.Price!;
-            // food.Category = _mapper!.Map<Category>(dto.Category);
-
-            // try
-            // {
-            //     await _foodRepo.UpdateFoodAsync(food, food.Id);
-            //     var updatedFood = _mapper.Map<FoodReadOnlyDTO>(food);
-            //     return updatedFood;
-            // }
-            // catch (Exception e)
-            // {
-            //     throw new Exception("Error updating food " + e.Message);
-            // }
-
-            // await _foodRepo.UpdateFoodAsync(food, food.Id);
-            // var updatedFood = _mapper!.Map<FoodReadOnlyDTO>(food);
-            // return updatedFood;
         }
 
     }

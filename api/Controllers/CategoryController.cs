@@ -31,6 +31,7 @@ namespace api.Controllers
         public async Task<IActionResult> GetAllAsync()
         {
             var cats = await _service!.GetAllCategoriesAsync();
+            if (cats == null) return NotFound();
             return Ok(cats);
         }
 

@@ -15,6 +15,7 @@ namespace api.Mapper
             CreateMap<User, UserInsertDTO>().ReverseMap();
             CreateMap<User, UserUpdateDTO>().ReverseMap();
             CreateMap<User, UserReadOnlyDTO>().ReverseMap();
+            CreateMap<UserReadOnlyDTO, UserUpdateDTO>().ReverseMap();
             CreateMap<Category, CategoryInsertDTO>().ReverseMap();
             CreateMap<Category, CategoryUpdateDTO>().ReverseMap();
             CreateMap<Category, CategoryReadOnlyDTO>().ReverseMap();

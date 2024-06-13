@@ -14,5 +14,7 @@ namespace api.Repositories
         Task<User> AddUserAsync(User user);
         Task<User?> DeleteUserAsync(int id);
         Task<User?> UpdateUserAsync(User user, int id);
+        Task<User?> GetByEmailAsync(string email);
+        Task<bool> UserExistsAsync(string username, string email);
     }
 }
