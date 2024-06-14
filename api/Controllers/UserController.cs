@@ -95,5 +95,15 @@ namespace api.Controllers
                 return StatusCode(500, new {message = "Error while updating user" + e.Message});
             }
         }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> LoginUserAsync([FromBody] LoginDto dto)
+        {
+            if (dto == null) return BadRequest("Invalid client request");
+
+            var response = await _service!.LoginUserAsync(dto);
+            if (response == null) return Unauthorized();
+            return Ok(response);
+        }
     }
 }
