@@ -1,5 +1,8 @@
+<!-- admin.component.html -->
 
+<!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
     <a class="navbar-brand">Pizza Joint</a>
     <button class="navbar-toggler" type="button" (click)="toggleNavbar()" [attr.aria-expanded]="isNavbarCollapsed ? 'false' : 'true'"
       aria-controls="navbarNav">
@@ -12,18 +15,47 @@
         </li>
       </ul>
     </div>
-  </nav>
-  
-  <div class="container mt-4">
-    <div class="row">
-      <div class="col-lg-8 mx-auto">
-        <h2 class="text-center mb-4">Edit Menu</h2>
-        <ul class="list-group">
-          <li *ngFor="let food of foodItems" class="list-group-item">
-            {{ food.name }} - ${{ food.price | number:'1.2-2' }}
-          </li>
-        </ul>
-      </div>
+  </div>
+</nav>
+
+<!-- Main Content -->
+<div class="container mt-4">
+  <div class="row">
+   <!-- Form Section -->
+<div class="col-lg-8">
+  <h2 class="mb-4">Add Food Item</h2>
+  <form (ngSubmit)="onSubmitFood()">
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input type="text" class="form-control" id="name" name="name" [(ngModel)]="insertDto.name" required>
     </div>
+    <div class="form-group">
+      <label for="price">Price</label>
+      <input type="number" class="form-control" id="price" name="price" [(ngModel)]="insertDto.price" required>
+    </div>
+    <div class="form-group">
+      <label for="category">Category</label>
+      <select class="form-control" id="category" name="category" [(ngModel)]="insertDto.category" required>
+        <option *ngFor="let category of categories" [value]="category.name">{{ category.name }}</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-success btn-sm mt-2">Add</button>
+  </form>
+  
+  
+  <div class="col-lg-4">
+    <h2 class="text-center mb-4">Menu</h2>
+    <div class="menu-container">
+      <ul class="list-group mt-4">
+        <li *ngFor="let food of foodItems" class="list-group-item d-flex justify-content-between align-items-center">
+          <span>{{ food.name }} - ${{ food.price | number:'1.2-2' }}</span>
+          <div class="btn-group" role="group" aria-label="Basic example">
+            <button class="btn btn-danger btn-sm" (click)="onDelete(food)">Delete</button>
+            <button class="btn btn-primary btn-sm" >Update</button>
+          </div>
+        </li>
+      </ul>
+    </div>
+    
   </div>
   

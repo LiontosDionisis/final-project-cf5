@@ -3,7 +3,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/login-service.service';
-import { FoodService } from '../../services/food.service';
+import { Category, FoodInsertDto, FoodService } from '../../services/food.service';
+import { FormsModule } from '@angular/forms';
 
 interface FoodItem {
   id: number;
@@ -14,7 +15,7 @@ interface FoodItem {
 @Component({
   selector: 'app-admin',
   standalone: true,
-  imports: [HttpClientModule, CommonModule, RouterLink, RouterModule],
+  imports: [HttpClientModule, CommonModule, RouterLink, RouterModule, FormsModule],
   templateUrl: './admin.component.html',
   styleUrl: './admin.component.css',
   providers: [
@@ -23,8 +24,16 @@ interface FoodItem {
   ]
 })
 export class AdminComponent {
-  foodItems: FoodItem[] = [];
 
+
+  insertDto: FoodInsertDto = {
+    name: "",
+    price: 0,
+    category: ""
+  }
+  
+  categories: Category[] = [];
+  foodItems: FoodItem[] = [];
   isNavbarCollapsed = true;
 
 
@@ -39,6 +48,34 @@ export class AdminComponent {
       this.router.navigate(['/home']);
     }
     this.loadFoodItems();
+    this.loadCategories();
+  }
+
+  onSubmitFood() {
+    this.foodService.addFoodItem(this.insertDto).subscribe(
+      (response) => {
+        console.log("Food inserted", response);
+        window.location.reload();
+      },
+      (error) => {
+        console.log("Error inserting food", error);
+      }
+    )
+  }
+
+  onDelete(food: any): void {
+    const confirmed = window.confirm(`Are you sure you want to delete ${food.name}?`);
+    if (confirmed) {
+      this.foodService.deleteFood(food.id).subscribe(
+        (response) => {
+          console.log("Food deleted", response);
+          window.location.reload();
+        },
+        (error) => {
+          console.error("Error deleting food", error);
+        }
+      );
+    }
   }
 
   toggleNavbar() {
@@ -59,7 +96,22 @@ export class AdminComponent {
     return this.authService.isLoggedIn();
   }
 
-  private loadFoodItems() {
+  loadCategories(): void {
+    this.foodService.getCategories().subscribe(
+      (response: any) => {
+        if (response && response.$values) {
+          this.categories = response.$values;
+        } else {
+          console.error('Invalid response format for categories:', response);
+        }
+      },
+      (error) => {
+        console.error('Error loading categories:', error);
+      }
+    );
+  }
+
+  loadFoodItems() {
     this.foodService.getFoodItems().subscribe(
       (response: any) => {
         if (response && response['$values']) {
