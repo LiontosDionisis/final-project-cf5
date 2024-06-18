@@ -4,6 +4,7 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Route, Router, RouterLink, RouterModule } from '@angular/router';
 import { InsertDto, RegisterServiceService } from '../../services/register-service.service';
+import { AuthService } from '../../services/login-service.service';
 
 @Component({
   selector: 'app-register',
@@ -12,7 +13,8 @@ import { InsertDto, RegisterServiceService } from '../../services/register-servi
   templateUrl: './register.component.html',
   styleUrl: './register.component.css',
   providers: [
-    RegisterServiceService
+    RegisterServiceService,
+    AuthService
   ]
 })
 export class RegisterComponent {
@@ -23,7 +25,13 @@ export class RegisterComponent {
     email: ""
   };
 
-  constructor(private registerService: RegisterServiceService, private router: Router) {}
+  constructor(private registerService: RegisterServiceService, private router: Router, private authService: AuthService) {}
+
+  ngOnInit() : void {
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['/home']);
+    }
+  }
   
   onSubmit() {
     this.registerService.register(this.insertDto).subscribe(

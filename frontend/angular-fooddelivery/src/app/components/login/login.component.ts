@@ -27,15 +27,26 @@ export class LoginComponent {
 
   constructor(private authService: AuthService, private router: Router) {}
 
-  onSubmit() {
+  ngOnInit() : void {
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['/home']);
+    }
+  }
+
+  onSubmit(): void {
     this.authService.login(this.loginDto).subscribe(
       (response) => {
-        console.log("Login successfull");
-        this.router.navigate(['/home']);
+        console.log('Login successful', response);
+        const userRole = this.authService.getUserRole();
+        if (userRole === 'admin') {
+          this.router.navigate(['/admin']); 
+        } else {
+          this.router.navigate(['/']);
+        }
       },
       (error) => {
-        console.error("Login failed", error);
+        console.error('Login failed', error);
       }
-    )
+    );
   }
 }

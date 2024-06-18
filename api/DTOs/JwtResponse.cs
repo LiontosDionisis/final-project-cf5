@@ -9,5 +9,6 @@ namespace api.DTOs
     {
         public string? Token { get; set; }
         public string? Expires { get; set; }
+        public string? Role { get; internal set; }
     }
 }

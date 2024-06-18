@@ -85,7 +85,8 @@ namespace api.Services
             {
                 Subject = new ClaimsIdentity(new Claim[]{
                     new Claim(ClaimTypes.Name, user.Username),
-                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString())
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Role, user.UserRole)
                 }),
                 Expires = DateTime.UtcNow.AddHours(1),
                 Issuer = _configuration["Jwt:Issuer"],
@@ -99,7 +100,8 @@ namespace api.Services
             return new JwtResponse
             {
                 Token = tokenString,
-                Expires = token.ValidTo.ToString()
+                Expires = token.ValidTo.ToString(),
+                Role = user.UserRole
             };
         }
 
