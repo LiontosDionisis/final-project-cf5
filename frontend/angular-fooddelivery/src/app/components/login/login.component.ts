@@ -30,8 +30,8 @@ export class LoginComponent {
   onSubmit() {
     this.authService.login(this.loginDto).subscribe(
       (response) => {
-        console.log("Login successfull", response);
-
+        console.log("Login successfull");
+        this.router.navigate(['/home']);
       },
       (error) => {
         console.error("Login failed", error);

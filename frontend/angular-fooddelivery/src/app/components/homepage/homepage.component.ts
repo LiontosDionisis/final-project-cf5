@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterLink, RouterModule } from '@angular/router';
+import { AuthService } from '../../services/login-service.service';
 
 interface FoodItem {
   id: number;
@@ -23,7 +24,8 @@ interface Category {
   templateUrl: './homepage.component.html',
   styleUrl: './homepage.component.css',
   providers: [
-    FoodService
+    FoodService,
+    AuthService
   ]
 })
 
@@ -31,7 +33,7 @@ export class HomepageComponent implements OnInit {
 
   foodItems: FoodItem[] = [];
 
-  constructor(private foodService: FoodService){}
+  constructor(private foodService: FoodService, private authService: AuthService){}
 
   ngOnInit(): void {
     this.loadFoodItems()
@@ -41,6 +43,16 @@ export class HomepageComponent implements OnInit {
 
   toggleNavbar() {
     this.isNavbarCollapsed = !this.isNavbarCollapsed;
+  }
+
+  logout(): void {
+    if (window.confirm("Are you sure you want to logout?")) {
+      this.authService.logout();
+    }
+  }
+
+  isLoggedIn() {
+    return this.authService.isLoggedIn();
   }
 
   closeNavbar() {
