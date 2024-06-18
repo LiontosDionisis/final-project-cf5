@@ -44,5 +44,9 @@ export class FoodService {
     return this.http.delete<any>(`${this.apiUrl}/${id}`);
   }
 
+  updateFood(id: number, food: any): Observable<any> {
+    return this.http.put(`${this.apiUrl}/${id}`, food);
+  }
+
 }
   

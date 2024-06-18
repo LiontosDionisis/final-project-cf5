@@ -12,6 +12,8 @@ interface FoodItem {
   price: number;
 }
 
+
+
 @Component({
   selector: 'app-admin',
   standalone: true,
@@ -35,6 +37,8 @@ export class AdminComponent {
   categories: Category[] = [];
   foodItems: FoodItem[] = [];
   isNavbarCollapsed = true;
+  selectedFood: any = null;
+  isUpdateFormVisible = false;
 
 
   constructor(private authService: AuthService, private router: Router, private foodService: FoodService) { }
@@ -76,6 +80,29 @@ export class AdminComponent {
         }
       );
     }
+  }
+
+  onUpdate(food: any): void {
+    this.selectedFood = { ...food };
+    this.isUpdateFormVisible = true;
+  }
+
+  onSubmitUpdate(): void {
+    if (this.selectedFood) {
+      this.foodService.updateFood(this.selectedFood.id, this.selectedFood).subscribe(
+        response => {
+          this.isUpdateFormVisible = false;
+          this.loadFoodItems();
+        },
+        error => {
+          console.error('Error updating food item', error);
+        }
+      );
+    }
+  }
+
+  onCancelUpdate(): void {
+    this.isUpdateFormVisible = false;
   }
 
   toggleNavbar() {
