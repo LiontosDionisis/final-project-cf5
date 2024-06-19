@@ -69,32 +69,6 @@ namespace api.Services
             return foodDto;
         }
 
-        // public async Task<FoodReadOnlyDTO> AddFoodAsync(FoodInsertDTO dto)
-        // {
-        //     var existingFood = await _foodRepo!.GetByNameAsync(dto.Name);
-        //     if (existingFood != null)
-        //     {
-        //         throw new FoodAlreadyExistsException("Food exists " + existingFood.Name);
-        //     }
-
-        //     // var existingCategory = await _catService.GetCategoryByNameAsync(dto.Category!);
-        //     // if (existingCategory == null)
-        //     // {
-        //     //     throw new ArgumentException("Category not found");
-        //     // }
-
-        //     var food = new Food 
-        //     {
-        //         Name = dto.Name,
-        //         Price = dto.Price,
-        //         Category = _mapper!.Map<Category>(category)
-        //     };
-
-        //     await _foodRepo!.AddFoodAsync(food);
-        //     return _mapper!.Map<FoodReadOnlyDTO>(food);
-        // }
-
-
         public async Task<FoodReadOnlyDTO?> DeleteFoodAsync(int id)
         {
             var food = await _foodRepo!.GetByIdAsync(id);

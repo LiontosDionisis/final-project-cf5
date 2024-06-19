@@ -19,17 +19,52 @@
       </ul>
     </div>
   </nav>
-  
   <div class="container mt-4">
     <div class="row">
-      <div class="col-lg-8 mx-auto">
-        <h2 class="text-center mb-4">Menu</h2>
-        <ul class="list-group">
-          <li *ngFor="let food of foodItems" class="list-group-item">
-            {{ food.name }} - ${{ food.price | number:'1.2-2' }}
-          </li>
-        </ul>
+      <div class="col-lg-4">
+        <div class="card">
+          <div class="card-body">
+            <h2 class="card-title mb-4">Categories</h2>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item category-item" *ngFor="let category of categories" (click)="onCategorySelect(category)">
+                {{ category.name }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-8" *ngIf="selectedCategory">
+        <div class="card">
+          <div class="card-body">
+            <h2 class="card-title mb-4">{{ selectedCategory.name }}</h2>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item food-item" *ngFor="let food of selectedCategory.foods">
+                <div class="d-flex justify-content-between align-items-center">
+                  <span>{{ food.name }}</span>
+                  <span class="badge badge-primary badge-pill">${{ food.price | number:'1.2-2' }}</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row mt-4">
+      <div class="col-lg-4">
+        <div class="card">
+          <div class="card-body">
+            <h2 class="card-title mb-4">Special Offers</h2>
+            <p>Check out our daily specials and enjoy delicious meals at great prices.</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <h2 class="card-title mb-4">Opening Hours</h2>
+            <p>Monday - Sunday: 10:00 AM - 2:00 PM</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
+  
   

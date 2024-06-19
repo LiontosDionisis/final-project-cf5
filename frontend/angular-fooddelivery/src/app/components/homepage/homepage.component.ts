@@ -5,11 +5,13 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientModule } from '@angular/common/http';
 import { RouterLink, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/login-service.service';
+import { forkJoin } from 'rxjs';
 
 interface FoodItem {
   id: number;
   name: string;
   price: number;
+  category: Category;
 }
 
 interface Category {
@@ -32,13 +34,48 @@ interface Category {
 export class HomepageComponent implements OnInit {
 
   foodItems: FoodItem[] = [];
+  categories: any[] = [];
+  selectedCategory: any = null;
+
+  filteredFoods: any[] = [];
 
   constructor(private foodService: FoodService, private authService: AuthService){}
 
   ngOnInit(): void {
-    this.loadFoodItems()
+    this.loadFoodItems();
+    //this.loadCategories();
+    forkJoin([
+      this.foodService.getFoodItems(),
+      this.foodService.getCategories()
+    ]).subscribe(([foodItemsResponse, categoriesResponse]) => {
+      this.foodItems = foodItemsResponse.$values;
+      this.categories = categoriesResponse.$values; 
+      this.filteredFoods = this.foodItems;
+    });
+  }
+  loadFoodItems() {
+    this.foodService.getFoodItems().subscribe(data => {
+      this.foodItems = data.$values; // Ensure the structure matches your API response
+      this.categories = this.extractCategories(this.foodItems);
+    });
   }
 
+  extractCategories(foodItems: any[]): any[] {
+    const categoriesMap = new Map<number, any>();
+    foodItems.forEach(food => categoriesMap.set(food.category.id, food.category));
+    return Array.from(categoriesMap.values());
+  }
+
+  onCategorySelect(category: any) {
+    this.selectedCategory = category;
+    this.selectedCategory.foods = this.extractFoodsByCategory(category.id);
+  }
+
+  extractFoodsByCategory(categoryId: number): any[] {
+    return this.foodItems.filter(food => food.category.id === categoryId);
+  }
+
+ 
   isNavbarCollapsed = true;
 
   toggleNavbar() {
@@ -57,26 +94,6 @@ export class HomepageComponent implements OnInit {
 
   closeNavbar() {
     this.isNavbarCollapsed = true;
-  }
-
-  private loadFoodItems() {
-    this.foodService.getFoodItems().subscribe(
-      (response: any) => {
-        if (response && response['$values']) {
-          // Extracting food items from the $values array
-          this.foodItems = response['$values'].map((item: any) => {
-            return {
-              id: item.id,
-              name: item.name,
-              price: item.price
-            };
-          });
-        }
-      },
-      error => {
-        console.error('Error fetching food items:', error);
-      }
-    );
   }
 
 }

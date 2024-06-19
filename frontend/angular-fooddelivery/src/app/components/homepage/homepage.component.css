@@ -5,3 +5,74 @@
     color: black; /* White text color */
   }
   
+
+  /* Custom CSS for Restaurant Menu Page */
+
+/* Container styles */
+.container {
+  padding-top: 20px;
+}
+
+/* Card styles */
+.card {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.card-body {
+  padding: 20px;
+}
+
+.card-title {
+  font-size: 1.5rem;
+  color: #333;
+  font-weight: bold;
+}
+
+/* List group styles */
+.list-group {
+  margin-bottom: 0;
+}
+
+.list-group-item {
+  cursor: pointer;
+}
+
+/* Menu container styles */
+.menu-container {
+  margin-top: 20px;
+}
+
+/* Food item styles */
+.food-item {
+  padding: 12px 20px;
+  transition: background-color 0.3s ease;
+}
+
+.food-item:hover {
+  background-color: #f5f5f5;
+}
+
+/* Badge styles */
+.badge-primary {
+  background-color: #007bff;
+}
+
+/* Menu description styles */
+.menu-description {
+  background-color: #f9f9f9;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.menu-description h4 {
+  margin-top: 0;
+  font-size: 1.2rem;
+  color: #333;
+  font-weight: bold;
+}
+
+.menu-description p {
+  margin-bottom: 10px;
+  color: #666;
+}
