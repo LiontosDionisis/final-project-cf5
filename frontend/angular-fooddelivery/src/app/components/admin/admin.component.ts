@@ -5,6 +5,7 @@ import { Router, RouterLink, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/login-service.service';
 import { Category, FoodInsertDto, FoodService } from '../../services/food.service';
 import { FormsModule } from '@angular/forms';
+import { CategoryInsertDto, CategoryServiceService } from '../../services/category-service.service';
 
 interface FoodItem {
   id: number;
@@ -22,7 +23,8 @@ interface FoodItem {
   styleUrl: './admin.component.css',
   providers: [
     AuthService,
-    FoodService
+    FoodService,
+    CategoryServiceService
   ]
 })
 export class AdminComponent {
@@ -33,6 +35,10 @@ export class AdminComponent {
     price: 0,
     category: ""
   }
+
+  catInsertDto: CategoryInsertDto = {
+    name: ""
+  }
   
   categories: Category[] = [];
   foodItems: FoodItem[] = [];
@@ -41,7 +47,7 @@ export class AdminComponent {
   isUpdateFormVisible = false;
 
 
-  constructor(private authService: AuthService, private router: Router, private foodService: FoodService) { }
+  constructor(private catService: CategoryServiceService, private authService: AuthService, private router: Router, private foodService: FoodService) { }
 
   ngOnInit(): void {
     const userRole = this.authService.getUserRole();
@@ -53,6 +59,18 @@ export class AdminComponent {
     }
     this.loadFoodItems();
     this.loadCategories();
+  }
+
+  onSubmitCat() {
+    this.catService.addCategory(this.catInsertDto).subscribe(
+      (response) => {
+        console.log("Category inserted", response);
+        window.location.reload();
+      },
+      (error) => {
+        console.log("Error inserting category", error);
+      }
+    )
   }
 
   onSubmitFood() {
