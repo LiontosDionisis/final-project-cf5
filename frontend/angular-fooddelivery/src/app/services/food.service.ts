@@ -8,10 +8,17 @@ export interface FoodInsertDto {
   category: string;
 }
 
+export interface Food {
+  id: number;
+  name: string;
+  price: number;
+}
+
 
 export interface Category {
   id: number;
   name: string;
+  foods: Food[];
 }
 
 @Injectable({

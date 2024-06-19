@@ -6,6 +6,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { RouterLink, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/login-service.service';
 import { forkJoin } from 'rxjs';
+import { Category } from '../../services/food.service';
 
 interface FoodItem {
   id: number;
@@ -14,10 +15,10 @@ interface FoodItem {
   category: Category;
 }
 
-interface Category {
-  id: number;
-  name: string;
-}
+// interface Category {
+//   id: number;
+//   name: string;
+// }
 
 @Component({
   selector: 'app-homepage',
@@ -33,9 +34,12 @@ interface Category {
 
 export class HomepageComponent implements OnInit {
 
+  isNavbarCollapsed = true;
   foodItems: FoodItem[] = [];
   categories: any[] = [];
   selectedCategory: any = null;
+  //selectedCategory: Category | null = null;
+  
 
   filteredFoods: any[] = [];
 
@@ -53,12 +57,38 @@ export class HomepageComponent implements OnInit {
       this.filteredFoods = this.foodItems;
     });
   }
+
   loadFoodItems() {
     this.foodService.getFoodItems().subscribe(data => {
       this.foodItems = data.$values; // Ensure the structure matches your API response
       this.categories = this.extractCategories(this.foodItems);
     });
   }
+
+  // extractCategories(foodItems: any[]): Category[] {
+    
+  //   const categoriesMap = new Map<number, Category>();
+
+  //   foodItems.forEach(food => {
+  //     const categoryId = food.category.id;
+
+  //     if (!categoriesMap.has(categoryId)) {
+  //       categoriesMap.set(categoryId, {
+  //         id: food.category.id,
+  //         name: food.category.name,
+  //         foods: []
+  //       });
+  //     }
+
+  //     categoriesMap.get(categoryId)?.foods.push({
+  //       id: food.id,
+  //       name: food.name,
+  //       price: food.price
+  //     });
+  //   });
+
+  //   return Array.from(categoriesMap.values());
+  // }
 
   extractCategories(foodItems: any[]): any[] {
     const categoriesMap = new Map<number, any>();
@@ -76,7 +106,7 @@ export class HomepageComponent implements OnInit {
   }
 
  
-  isNavbarCollapsed = true;
+  
 
   toggleNavbar() {
     this.isNavbarCollapsed = !this.isNavbarCollapsed;
