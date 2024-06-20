@@ -15,6 +15,14 @@ interface FoodItem {
   category: Category;
 }
 
+export interface CartItem {
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
+
 // interface Category {
 //   id: number;
 //   name: string;
@@ -38,6 +46,8 @@ export class HomepageComponent implements OnInit {
   foodItems: FoodItem[] = [];
   categories: any[] = [];
   selectedCategory: any = null;
+  cartItems: CartItem[] = [];
+
   //selectedCategory: Category | null = null;
   
 
@@ -45,50 +55,53 @@ export class HomepageComponent implements OnInit {
 
   constructor(private foodService: FoodService, private authService: AuthService){}
 
+
   ngOnInit(): void {
-    this.loadFoodItems();
-    //this.loadCategories();
     forkJoin([
       this.foodService.getFoodItems(),
       this.foodService.getCategories()
     ]).subscribe(([foodItemsResponse, categoriesResponse]) => {
-      this.foodItems = foodItemsResponse.$values;
-      this.categories = categoriesResponse.$values; 
-      this.filteredFoods = this.foodItems;
+      console.log('Food Items Response:', foodItemsResponse.$values); // Log the food items
+      console.log('Categories Response:', categoriesResponse.$values); // Log the categories
+  
+      // Flatten the food items
+      const allFoodItems = foodItemsResponse.$values.map((foodItem: { category: { foods: { $values: any[]; }; id: any; name: any; }; }) => {
+        if (foodItem.category && foodItem.category.foods && foodItem.category.foods.$values) {
+          return foodItem.category.foods.$values.map(food => ({
+            ...food,
+            category: { id: foodItem.category.id, name: foodItem.category.name }
+          }));
+        }
+        return [foodItem];
+      }).flat();
+  
+      this.foodItems = allFoodItems;
+      this.categories = categoriesResponse.$values;
+      this.filteredFoods = this.foodItems; // Initialize with all food items
+  
+      this.foodItems.forEach(food => {
+        console.log('Food:', food.name, 'Category ID:', food.category.id);
+      });
     });
   }
 
   loadFoodItems() {
     this.foodService.getFoodItems().subscribe(data => {
-      this.foodItems = data.$values; // Ensure the structure matches your API response
+      // Flatten the food items
+      const allFoodItems = data.$values.map((foodItem: { category: { foods: { $values: any[]; }; id: any; name: any; }; }) => {
+        if (foodItem.category && foodItem.category.foods && foodItem.category.foods.$values) {
+          return foodItem.category.foods.$values.map(food => ({
+            ...food,
+            category: { id: foodItem.category.id, name: foodItem.category.name }
+          }));
+        }
+        return [foodItem];
+      }).flat();
+
+      this.foodItems = allFoodItems;
       this.categories = this.extractCategories(this.foodItems);
     });
   }
-
-  // extractCategories(foodItems: any[]): Category[] {
-    
-  //   const categoriesMap = new Map<number, Category>();
-
-  //   foodItems.forEach(food => {
-  //     const categoryId = food.category.id;
-
-  //     if (!categoriesMap.has(categoryId)) {
-  //       categoriesMap.set(categoryId, {
-  //         id: food.category.id,
-  //         name: food.category.name,
-  //         foods: []
-  //       });
-  //     }
-
-  //     categoriesMap.get(categoryId)?.foods.push({
-  //       id: food.id,
-  //       name: food.name,
-  //       price: food.price
-  //     });
-  //   });
-
-  //   return Array.from(categoriesMap.values());
-  // }
 
   extractCategories(foodItems: any[]): any[] {
     const categoriesMap = new Map<number, any>();
@@ -98,15 +111,16 @@ export class HomepageComponent implements OnInit {
 
   onCategorySelect(category: any) {
     this.selectedCategory = category;
-    this.selectedCategory.foods = this.extractFoodsByCategory(category.id);
+    this.filteredFoods = this.extractFoodsByCategory(category.id); // Update filteredFoods
+    console.log('Selected Category:', this.selectedCategory); // Log the selected category
+    console.log('Filtered Foods:', this.filteredFoods); // Log the filtered foods
   }
 
   extractFoodsByCategory(categoryId: number): any[] {
-    return this.foodItems.filter(food => food.category.id === categoryId);
+    const filtered = this.foodItems.filter(food => food.category.id === categoryId);
+    console.log('Filtered Foods for Category ID', categoryId, ':', filtered); // Log the filtered foods
+    return filtered;
   }
-
- 
-  
 
   toggleNavbar() {
     this.isNavbarCollapsed = !this.isNavbarCollapsed;
@@ -124,6 +138,50 @@ export class HomepageComponent implements OnInit {
 
   closeNavbar() {
     this.isNavbarCollapsed = true;
+  }
+
+
+  addToCart(food: any) {
+    // Check if the item is already in the cart
+    const existingItem = this.cartItems.find(item => item.id === food.id);
+  
+    if (existingItem) {
+      // If item exists, increase the quantity
+      existingItem.quantity++;
+    } else {
+      // If item doesn't exist, add it to the cart
+      this.cartItems.push({
+        id: food.id,
+        name: food.name,
+        price: food.price,
+        quantity: 1
+      });
+    }
+  
+    // Optionally, you can notify the user that the item was added to the cart
+    console.log(`${food.name} added to cart!`);
+  }
+
+
+  removeFromCart(cartItem: CartItem) {
+    const index = this.cartItems.findIndex(item => item.id === cartItem.id);
+  
+    if (index !== -1) {
+      if (this.cartItems[index].quantity > 1) {
+        // If quantity > 1, decrease the quantity
+        this.cartItems[index].quantity--;
+      } else {
+        // If quantity === 1, remove the item from the cart
+        this.cartItems.splice(index, 1);
+      }
+    }
+  
+    // Optionally, you can notify the user that the item was removed from the cart
+    console.log(`${cartItem.name} removed from cart!`);
+  }
+
+  getTotalPrice(): number {
+    return this.cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   }
 
 }
