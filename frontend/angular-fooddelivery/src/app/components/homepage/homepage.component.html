@@ -43,10 +43,9 @@
                 <span>{{ food.name }}</span>
                 <span class="badge badge-primary badge-pill">${{ food.price | number:'1.2-2' }}</span>
                 <button class="btn btn-success btn-sm" *ngIf="isLoggedIn(); else loginRedirect" (click)="addToCart(food)">Add to Cart</button>
-
-<ng-template #loginRedirect>
-  <a class="btn btn-success btn-sm" routerLink="/login">Login to Add to Cart</a>
-</ng-template>
+                <ng-template #loginRedirect>
+                  <a class="btn btn-success btn-sm" routerLink="/login">Login to Add to Cart</a>
+                </ng-template>
               </div>
             </li>
           </ul>
