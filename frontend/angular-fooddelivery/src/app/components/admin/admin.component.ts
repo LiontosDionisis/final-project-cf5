@@ -30,6 +30,9 @@ interface FoodItem {
 export class AdminComponent {
 
 
+  errorMessage = ''
+
+
   insertDto: FoodInsertDto = {
     name: "",
     price: 0,
@@ -64,11 +67,9 @@ export class AdminComponent {
   onSubmitCat() {
     this.catService.addCategory(this.catInsertDto).subscribe(
       (response) => {
-        console.log("Category inserted", response);
         window.location.reload();
       },
       (error) => {
-        console.log("Error inserting category", error);
       }
     )
   }
@@ -76,11 +77,12 @@ export class AdminComponent {
   onSubmitFood() {
     this.foodService.addFoodItem(this.insertDto).subscribe(
       (response) => {
-        console.log("Food inserted", response);
         window.location.reload();
       },
       (error) => {
-        console.log("Error inserting food", error);
+        if (error.status == 400){
+          this.errorMessage = "Error inserting food. Make sure category is inserted."
+        }
       }
     )
   }
@@ -90,7 +92,6 @@ export class AdminComponent {
     if (confirmed) {
       this.foodService.deleteFood(food.id).subscribe(
         (response) => {
-          console.log("Food deleted", response);
           window.location.reload();
         },
         (error) => {
@@ -146,9 +147,7 @@ export class AdminComponent {
       (response: any) => {
         if (response && response.$values) {
           this.categories = response.$values;
-        } else {
-          console.error('Invalid response format for categories:', response);
-        }
+        } 
       },
       (error) => {
         console.error('Error loading categories:', error);

@@ -3,7 +3,7 @@
       <div class="col-md-6">
         <div class="card">
           <div class="card-body">
-            <h2 class="card-title text-center">Login</h2>
+            <h2 class="card-title text-center">Create your account</h2>
             <form (ngSubmit)="onSubmit()">
               <div class="form-group">
                 <label for="username">Username:</label>
@@ -19,6 +19,8 @@
               </div>
               <button type="submit" class="btn btn-primary btn-block mt-2">Register</button>
             </form>
+            <div *ngIf="errorMessage" class="mt-2 alert alert-danger">{{errorMessage}}</div>
+            <span>Already have an account? <a routerLink="/login">Login</a></span>
           </div>
         </div>
       </div>

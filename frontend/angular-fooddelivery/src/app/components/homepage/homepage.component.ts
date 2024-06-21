@@ -61,10 +61,6 @@ export class HomepageComponent implements OnInit {
       this.foodService.getFoodItems(),
       this.foodService.getCategories()
     ]).subscribe(([foodItemsResponse, categoriesResponse]) => {
-      console.log('Food Items Response:', foodItemsResponse.$values); // Log the food items
-      console.log('Categories Response:', categoriesResponse.$values); // Log the categories
-  
-      // Flatten the food items
       const allFoodItems = foodItemsResponse.$values.map((foodItem: { category: { foods: { $values: any[]; }; id: any; name: any; }; }) => {
         if (foodItem.category && foodItem.category.foods && foodItem.category.foods.$values) {
           return foodItem.category.foods.$values.map(food => ({
@@ -77,11 +73,11 @@ export class HomepageComponent implements OnInit {
   
       this.foodItems = allFoodItems;
       this.categories = categoriesResponse.$values;
-      this.filteredFoods = this.foodItems; // Initialize with all food items
+      this.filteredFoods = this.foodItems;
   
-      this.foodItems.forEach(food => {
-        console.log('Food:', food.name, 'Category ID:', food.category.id);
-      });
+      // this.foodItems.forEach(food => {
+      //   console.log('Food:', food.name, 'Category ID:', food.category.id);
+      // });
     });
   }
 
@@ -111,14 +107,11 @@ export class HomepageComponent implements OnInit {
 
   onCategorySelect(category: any) {
     this.selectedCategory = category;
-    this.filteredFoods = this.extractFoodsByCategory(category.id); // Update filteredFoods
-    console.log('Selected Category:', this.selectedCategory); // Log the selected category
-    console.log('Filtered Foods:', this.filteredFoods); // Log the filtered foods
+    this.filteredFoods = this.extractFoodsByCategory(category.id);
   }
 
   extractFoodsByCategory(categoryId: number): any[] {
     const filtered = this.foodItems.filter(food => food.category.id === categoryId);
-    console.log('Filtered Foods for Category ID', categoryId, ':', filtered); // Log the filtered foods
     return filtered;
   }
 
@@ -142,14 +135,11 @@ export class HomepageComponent implements OnInit {
 
 
   addToCart(food: any) {
-    // Check if the item is already in the cart
     const existingItem = this.cartItems.find(item => item.id === food.id);
   
     if (existingItem) {
-      // If item exists, increase the quantity
       existingItem.quantity++;
     } else {
-      // If item doesn't exist, add it to the cart
       this.cartItems.push({
         id: food.id,
         name: food.name,
@@ -157,9 +147,6 @@ export class HomepageComponent implements OnInit {
         quantity: 1
       });
     }
-  
-    // Optionally, you can notify the user that the item was added to the cart
-    console.log(`${food.name} added to cart!`);
   }
 
 
@@ -168,16 +155,11 @@ export class HomepageComponent implements OnInit {
   
     if (index !== -1) {
       if (this.cartItems[index].quantity > 1) {
-        // If quantity > 1, decrease the quantity
         this.cartItems[index].quantity--;
       } else {
-        // If quantity === 1, remove the item from the cart
         this.cartItems.splice(index, 1);
       }
     }
-  
-    // Optionally, you can notify the user that the item was removed from the cart
-    console.log(`${cartItem.name} removed from cart!`);
   }
 
   getTotalPrice(): number {

@@ -19,6 +19,8 @@ import { AuthService } from '../../services/login-service.service';
 })
 export class RegisterComponent {
 
+  errorMessage: string = '';
+
   insertDto: InsertDto = {
     username: "",
     password: "",
@@ -41,6 +43,7 @@ export class RegisterComponent {
       },
       (error) => {
         console.error("Registration Failed", error);
+        this.errorMessage = error.error.message;
       }
     )
   }

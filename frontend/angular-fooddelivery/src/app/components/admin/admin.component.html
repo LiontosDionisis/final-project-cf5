@@ -15,7 +15,7 @@
     </div>
   </div>
 </nav>
-<div class="container mt-4">
+<div class="container mt-4 main">
   <div class="row">
     <div class="col-lg-8">
       <h2 class="mb-4">Add Food Item</h2>
@@ -35,6 +35,7 @@
           </select>
         </div>
         <button type="submit" class="btn btn-success btn-sm mt-2">Add</button>
+        <div *ngIf="errorMessage" class="mt-2 alert alert-danger">{{errorMessage}}</div>
       </form>
       <div class="col-lg-8">
         <h2 class="mb-4 mt-4">Add Category</h2>

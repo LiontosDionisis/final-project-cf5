@@ -19,6 +19,8 @@ import { CommonModule } from '@angular/common';
 
 export class LoginComponent {
 
+  errorMessage = ""
+
   loginDto: LoginDto = {
     username: "",
     password: ""
@@ -46,6 +48,15 @@ export class LoginComponent {
       },
       (error) => {
         console.error('Login failed', error);
+        if (error.status == 404){
+          this.errorMessage = "Invalid credentials."
+        }
+        if (error.status == 401){
+          this.errorMessage = "Invalid credentials."
+        }
+        if (error.status == 500){
+          this.errorMessage = "Internal server error."
+        }
       }
     );
   }
