@@ -25,6 +25,8 @@ namespace api.Mapper
             CreateMap<Food, FoodReadOnlyDTO>().ReverseMap();
             CreateMap<Food, FoodInsertDTO>().ReverseMap();
             CreateMap<Food, FoodUpdateDTO>().ReverseMap();
+            CreateMap<Order, OrderInsertDTO>().ReverseMap();
+            CreateMap<Order, OrderReadOnlyDTO>().ReverseMap();
         }
         
     }
