@@ -79,6 +79,7 @@ export class HomepageComponent implements OnInit {
 
   loadFoodItems() {
     this.foodService.getFoodItems().subscribe(data => {
+      // Flatten the food items
       const allFoodItems = data.$values.map((foodItem: { category: { foods: { $values: any[]; }; id: any; name: any; }; }) => {
         if (foodItem.category && foodItem.category.foods && foodItem.category.foods.$values) {
           return foodItem.category.foods.$values.map(food => ({
@@ -109,6 +110,7 @@ export class HomepageComponent implements OnInit {
     const filtered = this.foodItems.filter(food => food.category.id === categoryId);
     return filtered;
   }
+
 
   toggleNavbar() {
     this.isNavbarCollapsed = !this.isNavbarCollapsed;
