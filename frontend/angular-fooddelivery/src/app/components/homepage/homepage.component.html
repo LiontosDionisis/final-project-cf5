@@ -99,7 +99,9 @@
           </div>
           <label for="address">Address:</label>
           <input type="text" id="address" [(ngModel)]="address" name="address" class="form-control" placeholder="Enter your address" required>
-          <button class="btn btn-success btn-block mt-3" (click)="placeOrder(address)" [disabled]="cartItems.length === 0">Place Order</button>
+          <button class="btn btn-success btn-block mt-3" (click)="placeOrder(address)" [disabled]="cartItems.length === 0 || address.length === 0">Place Order</button>
+          <div *ngIf="orderMsg" class="mt-2 alert alert-success">{{orderMsg}}</div>
+          <div *ngIf="ErrOrderMsg" class="mt-2 alert alert-danger">{{ErrOrderMsg}}</div>
         </div>
       </div>
     </div>
