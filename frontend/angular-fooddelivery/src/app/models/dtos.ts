@@ -9,7 +9,7 @@ export interface FoodItemDTO {
     items: {
       name: string;
       price: number;
-      categoryId: number; // Ensure categoryId is provided or inferred
+      categoryId: number;
     }[];
   }
   

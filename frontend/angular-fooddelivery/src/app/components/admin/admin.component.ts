@@ -6,6 +6,7 @@ import { AuthService } from '../../services/login-service.service';
 import { Category, FoodInsertDto, FoodService } from '../../services/food.service';
 import { FormsModule } from '@angular/forms';
 import { CategoryInsertDto, CategoryServiceService } from '../../services/category-service.service';
+import { OrderService } from '../../services/order.service';
 
 interface FoodItem {
   id: number;
@@ -24,7 +25,8 @@ interface FoodItem {
   providers: [
     AuthService,
     FoodService,
-    CategoryServiceService
+    CategoryServiceService,
+    OrderService
   ]
 })
 export class AdminComponent {
@@ -45,12 +47,13 @@ export class AdminComponent {
   
   categories: Category[] = [];
   foodItems: FoodItem[] = [];
+  orders: any[] = [];
   isNavbarCollapsed = true;
   selectedFood: any = null;
   isUpdateFormVisible = false;
 
 
-  constructor(private catService: CategoryServiceService, private authService: AuthService, private router: Router, private foodService: FoodService) { }
+  constructor(private catService: CategoryServiceService, private authService: AuthService, private router: Router, private foodService: FoodService, private orderService: OrderService) { }
 
   ngOnInit(): void {
     const userRole = this.authService.getUserRole();
@@ -62,6 +65,7 @@ export class AdminComponent {
     }
     this.loadFoodItems();
     this.loadCategories();
+    this.loadOrders();
   }
 
   onSubmitCat() {
@@ -159,7 +163,6 @@ export class AdminComponent {
     this.foodService.getFoodItems().subscribe(
       (response: any) => {
         if (response && response['$values']) {
-          // Extracting food items from the $values array
           this.foodItems = response['$values'].map((item: any) => {
             return {
               id: item.id,
@@ -173,6 +176,15 @@ export class AdminComponent {
         console.error('Error fetching food items:', error);
       }
     );
+  }
 
+  loadOrders(): void {
+    this.orderService.loadOrders().subscribe(data => {
+      if (data && data.$values) {
+        this.orders = data.$values;
+      } else {
+        this.orders = [];
+      }
+    });
   }
 }

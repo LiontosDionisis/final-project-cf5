@@ -7,6 +7,8 @@ import jwt_decode from 'jwt-decode';
 
 
 
+
+
 export interface LoginDto {
   username: string;
   password: string;
@@ -35,7 +37,7 @@ export class AuthService {
       tap(response => {
         if (response.token) {
           localStorage.setItem(this.tokenKey, response.token);
-          localStorage.setItem(this.roleKey, response.role); // Store Role in localStorage
+          localStorage.setItem(this.roleKey, response.role);
         }
       }),
       catchError(error => {
@@ -70,4 +72,5 @@ export class AuthService {
       return null;
     }
   }
+  
 }

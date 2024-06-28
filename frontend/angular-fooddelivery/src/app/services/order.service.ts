@@ -15,22 +15,10 @@ export class OrderService {
 
   constructor(private http: HttpClient) { }
 
-  
 
-  // addToCart(food: any) {
-  //   const existingItem = this.cartItems.find(item => item.id === food.id);
-
-  //   if (existingItem) {
-  //     existingItem.quantity++;
-  //   } else {
-  //     this.cartItems.push({
-  //       id: food.id,
-  //       name: food.name,
-  //       price: food.price,
-  //       quantity: 1
-  //     });
-  //   }
-  // }
+  loadOrders(): Observable<any> {
+    return this.http.get<any>(this.apiUrl);
+  }
 
   removeFromCart(cartItem: CartItem) {
     const index = this.cartItems.findIndex(item => item.id === cartItem.id);
@@ -55,7 +43,6 @@ export class OrderService {
   clearCart() {
     this.cartItems = [];
   }
-
 
   placeOrder(dto: OrderInsertDTO): Observable<OrderReadOnlyDTO> {
     return this.http.post<OrderReadOnlyDTO>(this.apiUrl, dto);
