@@ -8,6 +8,7 @@ namespace api.DTOs
 {
     public class OrderInsertDTO
     {
+        public int UserId {get; set;}
         public decimal Price {get; set;}
         public ICollection<Food>? Items {get; set;}
         public String Address {get; set;} = String.Empty;

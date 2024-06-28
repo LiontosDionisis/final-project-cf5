@@ -73,4 +73,22 @@ export class AuthService {
     }
   }
   
+  getUserIdFromToken(): string | null {
+    const authToken = localStorage.getItem('authToken');
+    if (authToken) {
+      try {
+        const decodedToken: any = this.decodeJwtToken(authToken);
+        if (decodedToken && typeof decodedToken.nameid === 'string') {
+          return decodedToken.nameid;
+        } else {
+          console.error('User ID (nameid) not found or not a string in JWT token');
+        }
+      } catch (error) {
+        console.error('Error decoding JWT token:', error);
+      }
+    } else {
+      console.error('JWT token not found in localStorage');
+    }
+    return null;
+  }
 }

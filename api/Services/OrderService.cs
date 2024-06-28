@@ -24,6 +24,7 @@ namespace api.Services
         {
             var order = new Order
             {
+                UserId = dto.UserId,
                 Address = dto.Address,
                 Price = dto.Price,
                 Items = dto.Items
@@ -33,6 +34,7 @@ namespace api.Services
         
             var orderDto = new OrderReadOnlyDTO
             {
+                UserId = order.UserId,
                 Id = order.Id,
                 Address = order.Address,
                 Price = order.Price,

@@ -170,7 +170,14 @@ export class HomepageComponent implements OnInit {
   }
 
   placeOrder(address: string): void {
+    const userId = this.authService.getUserIdFromToken();
+    if (!userId) {
+      console.error('User ID not found in JWT token');
+      return;
+    }
+  
     const dto: OrderInsertDTO = {
+      userId: userId,
       address: address,
       price: this.getTotalPrice(),
       items: this.cartItems.map(item => ({
@@ -183,12 +190,12 @@ export class HomepageComponent implements OnInit {
     this.orderService.placeOrder(dto).subscribe(
       (order) => {
         console.log('Order placed successfully:', order);
-        this.orderMsg = "Order was sent! Your doorbell will ring in 25 minutes."
+        this.orderMsg = "Order was sent! Your doorbell will ring in 25 minutes.";
         this.cartItems = [];
       },
       (error) => {
         console.error('Error placing order:', error);
-        this.ErrOrderMsg = "Something went wrong :( Please try again."
+        this.ErrOrderMsg = "Something went wrong :( Please try again.";
       }
     );
   }

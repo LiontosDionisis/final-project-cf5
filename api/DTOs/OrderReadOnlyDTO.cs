@@ -8,6 +8,7 @@ namespace api.DTOs
 {
     public class OrderReadOnlyDTO
     {
+        public int UserId {get; set;}
         public int Id { get; set; }
         public decimal Price {get; set;}
         public ICollection<Food>? Items {get; set;}

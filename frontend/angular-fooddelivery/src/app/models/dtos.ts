@@ -4,6 +4,7 @@ export interface FoodItemDTO {
   }
   
   export interface OrderInsertDTO {
+    userId: string,
     address: string;
     price: number;
     items: {
