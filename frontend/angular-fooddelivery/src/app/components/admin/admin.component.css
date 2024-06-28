@@ -3,7 +3,8 @@
     overflow-y: auto;
   }
 
-.main {
-  color: white;
+  .orders-container {
+  max-height: 400px;
+  overflow-y: auto;
+  margin-top: 20px;
 }
-  

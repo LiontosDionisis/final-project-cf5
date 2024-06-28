@@ -32,9 +32,12 @@ builder.Services.AddAutoMapper(typeof(DTOMapper));
 builder.Services.AddScoped<IUserRepositoy, UserRepository>();
 builder.Services.AddScoped<IFoodRepository, FoodRepository>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IFoodService, FoodService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+
 
 builder.Services.AddControllers()
         .AddJsonOptions(options =>

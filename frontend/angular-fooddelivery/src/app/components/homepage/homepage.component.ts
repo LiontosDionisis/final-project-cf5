@@ -7,6 +7,9 @@ import { RouterLink, RouterModule } from '@angular/router';
 import { AuthService } from '../../services/login-service.service';
 import { forkJoin } from 'rxjs';
 import { Category } from '../../services/food.service';
+import { OrderService } from '../../services/order.service';
+import { OrderInsertDTO, OrderReadOnlyDTO } from '../../models/dtos';
+import { FormsModule } from '@angular/forms';
 
 interface FoodItem {
   id: number;
@@ -20,23 +23,19 @@ export interface CartItem {
   name: string;
   price: number;
   quantity: number;
+  category : Category;
 }
-
-
-// interface Category {
-//   id: number;
-//   name: string;
-// }
 
 @Component({
   selector: 'app-homepage',
   standalone: true,
-  imports: [CommonModule, HttpClientModule, RouterLink, RouterModule],
+  imports: [CommonModule, HttpClientModule, RouterLink, RouterModule, FormsModule],
   templateUrl: './homepage.component.html',
   styleUrl: './homepage.component.css',
   providers: [
     FoodService,
-    AuthService
+    AuthService,
+    OrderService
   ]
 })
 
@@ -47,13 +46,12 @@ export class HomepageComponent implements OnInit {
   categories: any[] = [];
   selectedCategory: any = null;
   cartItems: CartItem[] = [];
-
-  //selectedCategory: Category | null = null;
-  
-
+  address: string = '';
   filteredFoods: any[] = [];
+  orderMsg: string = '';
+  ErrOrderMsg: string = '';
 
-  constructor(private foodService: FoodService, private authService: AuthService){}
+  constructor(private foodService: FoodService, private authService: AuthService, private orderService: OrderService){}
 
 
   ngOnInit(): void {
@@ -74,46 +72,52 @@ export class HomepageComponent implements OnInit {
       this.foodItems = allFoodItems;
       this.categories = categoriesResponse.$values;
       this.filteredFoods = this.foodItems;
-  
-      // this.foodItems.forEach(food => {
-      //   console.log('Food:', food.name, 'Category ID:', food.category.id);
-      // });
     });
   }
 
   loadFoodItems() {
     this.foodService.getFoodItems().subscribe(data => {
-      // Flatten the food items
-      const allFoodItems = data.$values.map((foodItem: { category: { foods: { $values: any[]; }; id: any; name: any; }; }) => {
-        if (foodItem.category && foodItem.category.foods && foodItem.category.foods.$values) {
+      const allFoodItems = data.$values.flatMap((foodItem: { category: { foods: { $values: any[]; }; id: any; name: any; }; }) => {
+        if (foodItem && foodItem.category && foodItem.category.foods && foodItem.category.foods.$values) {
           return foodItem.category.foods.$values.map(food => ({
             ...food,
             category: { id: foodItem.category.id, name: foodItem.category.name }
           }));
         }
-        return [foodItem];
-      }).flat();
+        return [];
+      });
 
       this.foodItems = allFoodItems;
       this.categories = this.extractCategories(this.foodItems);
     });
   }
-
+  
   extractCategories(foodItems: any[]): any[] {
     const categoriesMap = new Map<number, any>();
-    foodItems.forEach(food => categoriesMap.set(food.category.id, food.category));
-    return Array.from(categoriesMap.values());
+    foodItems.forEach(food => {
+      if (food.category && food.category.id != null) {
+        categoriesMap.set(food.category.id, food.category);
+      }
+    });
+  
+    const categories = Array.from(categoriesMap.values());
+    return categories;
   }
-
+  
   onCategorySelect(category: any) {
-    this.selectedCategory = category;
-    this.filteredFoods = this.extractFoodsByCategory(category.id);
+    if (category && category.id != null) {
+      this.selectedCategory = category;
+      this.filteredFoods = this.extractFoodsByCategory(category.id);
+    } else {
+      console.warn('Invalid category selected:', category);
+    }
   }
-
+  
   extractFoodsByCategory(categoryId: number): any[] {
-    const filtered = this.foodItems.filter(food => food.category.id === categoryId);
+    const filtered = this.foodItems.filter(food => food.category && food.category.id === categoryId);
     return filtered;
   }
+
 
   toggleNavbar() {
     this.isNavbarCollapsed = !this.isNavbarCollapsed;
@@ -133,7 +137,6 @@ export class HomepageComponent implements OnInit {
     this.isNavbarCollapsed = true;
   }
 
-
   addToCart(food: any) {
     const existingItem = this.cartItems.find(item => item.id === food.id);
   
@@ -144,13 +147,13 @@ export class HomepageComponent implements OnInit {
         id: food.id,
         name: food.name,
         price: food.price,
-        quantity: 1
+        quantity: 1,
+        category: food.category 
       });
     }
   }
-
-
-  removeFromCart(cartItem: CartItem) {
+  
+  removeFromCart(cartItem: CartItem): void {
     const index = this.cartItems.findIndex(item => item.id === cartItem.id);
   
     if (index !== -1) {
@@ -166,4 +169,34 @@ export class HomepageComponent implements OnInit {
     return this.cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   }
 
+  placeOrder(address: string): void {
+    const userId = this.authService.getUserIdFromToken();
+    if (!userId) {
+      console.error('User ID not found in JWT token');
+      return;
+    }
+  
+    const dto: OrderInsertDTO = {
+      userId: userId,
+      address: address,
+      price: this.getTotalPrice(),
+      items: this.cartItems.map(item => ({
+        name: item.name,
+        price: item.price,
+        categoryId: item.category.id 
+      }))
+    };
+  
+    this.orderService.placeOrder(dto).subscribe(
+      (order) => {
+        console.log('Order placed successfully:', order);
+        this.orderMsg = "Order was sent! Your doorbell will ring in 25 minutes.";
+        this.cartItems = [];
+      },
+      (error) => {
+        console.error('Error placing order:', error);
+        this.ErrOrderMsg = "Something went wrong :( Please try again.";
+      }
+    );
+  }
 }

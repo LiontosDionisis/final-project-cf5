@@ -7,6 +7,8 @@ import jwt_decode from 'jwt-decode';
 
 
 
+
+
 export interface LoginDto {
   username: string;
   password: string;
@@ -35,7 +37,7 @@ export class AuthService {
       tap(response => {
         if (response.token) {
           localStorage.setItem(this.tokenKey, response.token);
-          localStorage.setItem(this.roleKey, response.role); // Store Role in localStorage
+          localStorage.setItem(this.roleKey, response.role);
         }
       }),
       catchError(error => {
@@ -69,5 +71,24 @@ export class AuthService {
       console.error('Error decoding token:', error);
       return null;
     }
+  }
+  
+  getUserIdFromToken(): string | null {
+    const authToken = localStorage.getItem('authToken');
+    if (authToken) {
+      try {
+        const decodedToken: any = this.decodeJwtToken(authToken);
+        if (decodedToken && typeof decodedToken.nameid === 'string') {
+          return decodedToken.nameid;
+        } else {
+          console.error('User ID (nameid) not found or not a string in JWT token');
+        }
+      } catch (error) {
+        console.error('Error decoding JWT token:', error);
+      }
+    } else {
+      console.error('JWT token not found in localStorage');
+    }
+    return null;
   }
 }
